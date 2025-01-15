@@ -12,7 +12,8 @@ const cryptoSchema = new Schema({
     },
     status: {
         type: String,
-        default: "Pending"
+        default: "Pending",
+        required: false
     },
     email: {
         type: String,
@@ -32,6 +33,10 @@ const cryptoSchema = new Schema({
         type: String,
         default: "Delete",
         required: false
+    },
+    req_date: {
+        type: Date,
+        reuired: true
     }
 })
 

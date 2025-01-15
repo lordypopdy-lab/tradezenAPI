@@ -2,7 +2,91 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const Admin = require("../models/adminModel");
 const bankModel = require("../models/bankModel");
+const cryptoModel = require("../models/cryptoModel");
 const { hashPassword, comparePassword } = require("../helpers/auth");
+
+const withdrawCrypto = async (req, res) => {
+  const { email, value, walletAddress } = req.body;
+
+  if (!value || value <= 10) {
+    return res.json({
+      error: "Amount must be provided and must be greater than 10",
+    });
+  }
+
+  if (!walletAddress) {
+    return res.json({
+      error: "A valid wallet address is required",
+    });
+  }
+
+  const findUser = await User.findOne({ email: email });
+  if (!findUser) {
+    return res.status(404).json({
+      error: "Invalid request, Unidentify user",
+    });
+  }
+
+  if (findUser.deposit >= value) {
+    await cryptoModel.create({
+      amount: value,
+      email: email,
+      cryptoAddress: walletAddress,
+      reg_date: new Date(),
+    });
+
+    await User.updateOne({ email: email }, { $inc: { deposit: -value } });
+    return res.json({
+      success: "withdrawal request sent",
+    });
+  }
+
+  if (findUser.profit >= value) {
+    await cryptoModel.create({
+      amount: value,
+      cryptoAddress: walletAddress,
+      email: email,
+      reg_date: new Date(),
+    });
+
+    await User.updateOne({ email: email }, { $inc: { profit: -value } });
+    return res.json({
+      success: "withdrawal request sent",
+    });
+  }
+
+  if (findUser.bonuse >= value) {
+    await cryptoModel.create({
+      amount: value,
+      cryptoAddress: walletAddress,
+      email: email,
+      reg_date: new Date(),
+    });
+
+    await User.updateOne({ email: email }, { $inc: { bonuse: -value } });
+    return res.json({
+      success: "withdrawal request sent",
+    });
+  }
+
+  if (findUser.deposit <= 10) {
+    return res.json({
+      error: "Insufficient Balance!",
+    });
+  }
+
+  if (findUser.profit <= 10) {
+    return res.json({
+      error: "Insufficient Balance!",
+    });
+  }
+
+  if (findUser.bonuse <= 10) {
+    return res.json({
+      error: "Insufficient Balance!",
+    });
+  }
+};
 
 const withdrawBank = async (req, res) => {
   const { email, value, bank_name, account_name, account_number, swift_code } =
@@ -337,4 +421,5 @@ module.exports = {
   loginAdmin,
   addBalance,
   withdrawBank,
+  withdrawCrypto,
 };
