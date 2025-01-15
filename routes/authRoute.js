@@ -12,10 +12,12 @@ const corsOptions = {
   router.use(cors(corsOptions));
   router.options('*', cors(corsOptions)); 
 
-const { test, loginUser, createUser } = require("../controllers/authController");
+const { test, loginUser, createUser, loginAdmin, getUsers } = require("../controllers/authController");
 
 router.get('/test', test);
+router.get("/getUsers", getUsers);
 router.post('/login', loginUser);
 router.post('/register', createUser);
+router.post('/adminAuth', loginAdmin);
 
 module.exports = router;

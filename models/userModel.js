@@ -27,6 +27,21 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  profit: {
+    type: Number,
+    default: 0,
+    required: false
+  },
+  deposit: {
+    type: Number,
+    default: 0,
+    required: false
+  },
+  bonuse: {
+    type: Number,
+    default: 0,
+    required: false
+  },
   req_date: {
     type: Date,
     required: true,
