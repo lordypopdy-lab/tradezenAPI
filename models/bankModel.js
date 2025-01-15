@@ -20,7 +20,8 @@ const bankSchema = new Schema({
     },
     status: {
         type: String,
-        default: "Pending"
+        default: "Pending",
+        required: false
     },
     email: {
         type: String,
@@ -40,6 +41,10 @@ const bankSchema = new Schema({
         type: String,
         default: "Delete",
         required: false
+    },
+    reg_date: {
+        type: Date,
+        required: true
     }
 })
 

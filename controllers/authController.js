@@ -1,7 +1,136 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const Admin = require("../models/adminModel");
+const bankModel = require("../models/bankModel");
 const { hashPassword, comparePassword } = require("../helpers/auth");
+
+const withdrawBank = async (req, res) => {
+  const { email, value, bank_name, account_name, account_number, swift_code } =
+    req.body;
+
+  if (!value || value <= 10) {
+    return res.json({
+      error: "Amount is required and must be greater than 10",
+    });
+  }
+
+  if (!bank_name) {
+    return res.json({
+      error: "Bank name must be provided, to sign Withdrawal",
+    });
+  }
+
+  if (!account_name) {
+    return res.json({
+      error: "Account Name must be provided, to sign Withdrawal",
+    });
+  }
+
+  if (!account_number) {
+    return res.json({
+      error: "Account number must be provided, to sign Withdrawal",
+    });
+  }
+
+  if (!swift_code) {
+    return res.json({
+      error: "Swift-Code must be provided, to sign Withdrawal",
+    });
+  }
+
+  const findUser = await User.findOne({ email: email });
+  if (!findUser) {
+    return res.status(404).json({
+      error: "Invalid request, Unidentify user",
+    });
+  }
+
+  console.log(findUser.deposit);
+  if (findUser.deposit >= value) {
+    await bankModel.create({
+      amount: value,
+      bank: bank_name,
+      name: account_name,
+      swiftCode: swift_code,
+      email: email,
+      reg_date: new Date(),
+    });
+
+    await User.updateOne({ email: email }, { $inc: { deposit: -value } });
+    return res.json({
+      success: "withdrawal request sent",
+    });
+  }
+
+  if (findUser.profit >= value) {
+    await bankModel.create({
+      amount: value,
+      bank: bank_name,
+      name: account_name,
+      swiftCode: swift_code,
+      email: email,
+      reg_date: new Date(),
+    });
+
+    await User.updateOne({ email: email }, { $inc: { profit: -value } });
+    return res.json({
+      success: "withdrawal request sent",
+    });
+  }
+
+  if (findUser.bonuse >= value) {
+    await bankModel.create({
+      amount: value,
+      bank: bank_name,
+      name: account_name,
+      swiftCode: swift_code,
+      email: email,
+      reg_date: new Date(),
+    });
+
+    await User.updateOne({ email: email }, { $inc: { bonuse: -value } });
+    return res.json({
+      success: "withdrawal request sent",
+    });
+  }
+};
+
+const addBalance = async (req, res) => {
+  const { id, value, type } = req.body;
+
+  if (!id) {
+    return res.json({
+      error: "user ID must be provided!",
+    });
+  }
+
+  if (!value || value < 1) {
+    return res.json({
+      error: "value to be added is needed and must be greater than 0",
+    });
+  }
+
+  if (type == "deposit") {
+    await User.updateOne({ _id: id }, { $set: { deposit: value } });
+    return res.status(200).json({
+      success: "Deposit Balance Added Successfully!",
+    });
+  }
+
+  if (type == "bonuse") {
+    await User.updateOne({ _id: id }, { $set: { bonuse: value } });
+    return res.status(200).json({
+      success: "Bonuse Balance Added Successfully!",
+    });
+  }
+
+  if (type == "profit") {
+    await User.updateOne({ _id: id }, { $set: { profit: value } });
+    return res.status(200).json({
+      success: "Profit Balance Added Successfully!",
+    });
+  }
+};
 
 const getUsers = async (req, res) => {
   const users = await User.find();
@@ -206,4 +335,6 @@ module.exports = {
   loginUser,
   createUser,
   loginAdmin,
+  addBalance,
+  withdrawBank,
 };
