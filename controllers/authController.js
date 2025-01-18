@@ -5,6 +5,29 @@ const bankModel = require("../models/bankModel");
 const cryptoModel = require("../models/cryptoModel");
 const { hashPassword, comparePassword } = require("../helpers/auth");
 
+const getCryptoRecords = async (req, res) => {
+  const { email } = req.body;
+  const find = await cryptoModel.find({ email: email });
+
+  if (find) {
+    return res.json(find)
+  }
+
+  return res.json({});
+}
+
+const getBankRecords = async (req, res) => {
+  const { email } = req.body;
+
+  const find = await bankModel.find({ email: email });
+
+  if (find) {
+    return res.json(find)
+  }
+
+  return res.json({});
+}
+
 const getUser = async (req, res) => {
   const { email } = req.body;
 
@@ -453,4 +476,6 @@ module.exports = {
   addBalance,
   withdrawBank,
   withdrawCrypto,
+  getBankRecords,
+  getCryptoRecords
 };

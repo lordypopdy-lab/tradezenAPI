@@ -12,7 +12,7 @@ const corsOptions = {
   router.use(cors(corsOptions));
   router.options('*', cors(corsOptions)); 
 
-const { test, loginUser, createUser, loginAdmin, getUser, getUsers, addBalance , withdrawBank, withdrawCrypto} = require("../controllers/authController");
+const { test, loginUser, createUser, loginAdmin, getUser, getUsers, addBalance , withdrawBank, withdrawCrypto, getBankRecords, getCryptoRecords} = require("../controllers/authController");
 
 router.get('/test', test);
 router.post("/getUser", getUser);
@@ -23,6 +23,8 @@ router.post('/adminAuth', loginAdmin);
 router.post('/addBalance', addBalance);
 router.post("/withdrawBank", withdrawBank);
 router.post("/withdrawCrypto", withdrawCrypto);
+router.post("/getBankRecords", getBankRecords);
+router.post("/getCryptoRecords", getCryptoRecords);
 
 
 module.exports = router;
